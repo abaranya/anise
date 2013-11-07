@@ -15,8 +15,6 @@ using namespace ani;
 
 tissueMap tmap;
 
-#define TINFER true
-
 // /////////////////////////////////////////////////////////////////////
 //
 // Method: Constructor : Initializes object structure for given volume size.
@@ -91,7 +89,7 @@ void volume::set(int h, int x,int y,int z,unsigned char value)
   this->matrix = new ppoint**[z+1];
 
   for(int k = 0; k <= z; k++){
-    cerr << "here:"  << __FILE__ << ":" << __LINE__ << " & k:" << k << endl;
+    //    cerr << "here:"  << __FILE__ << ":" << __LINE__ << " & k:" << k << endl;
     matrix[k] = new ppoint*[y+1];
     for(int j=0; j <= y; j++){
       matrix[k][j]= new ppoint[x+1];
@@ -103,7 +101,7 @@ void volume::set(int h, int x,int y,int z,unsigned char value)
 
 void volume::setRule(ruleType rule)
 {
- if ( rule == A_NO_RULE )
+  if ( rule == A_NO_RULE )
   {
     this-> nRules = 0;
     this-> rules = A_NO_RULE;
@@ -254,7 +252,6 @@ bool volume::writeHeader(std::ostream& output, vformat fmt)
   {
   case V_ANI_BINARY:
   case V_BINARY:
-    /*  Luis Request 3/12/12    
     // Write subvolume representation
     // Recalulates Box
     // Write full volume dimension
@@ -281,7 +278,7 @@ bool volume::writeHeader(std::ostream& output, vformat fmt)
     output.write((char*)&d,sizeof(unsigned short));
     return true;    
     break;
-    */
+
   case V_FAKE_BINARY:
   case V_RAW_BINARY:
     // Write full volume dimension
@@ -361,45 +358,37 @@ float volume::calculateProb(int x, int y, int z)
       switch((int)pow(2,d))
       {
 	case A_TISSUE_MAP:
-
-	  if (TINFER)
-	    prob = (float) tmap.getTissue(ani::T_DENTITION).prob(this->matrix[z][y][x].i);
-	  else
-	    prob = (float) tmap.getTissue(ani::T_SPEC).prob(this->matrix[z][y][x].i);
-	  
+	  //prob = (float) tmap.getTissue(ani::T_DENTITION).prob(this->matrix[z][y][x].i);
+	  prob = (float) tmap.getTissue(ani::T_BONE).prob(this->matrix[z][y][x].i);
+	  /*
 	  if ( prob > 0.0 )
 	  {
 	    cerr << "caculating prob using tissue for[" << x << "," << y << "," << z \
 		 << "]:" << this->matrix[z][y][x].i << " en:" << prob << endl;
-	  }
+	  }*/
 	  this->matrix[z][y][x].p[d] = prob;
 	  break;
 	case A_BOUNDING_BOX:
 	  {
 	    bbox box;
 	    location b,e; // just a test;
-	    /*
-	    if(TINFER)
-	      {
-		/* skewed_head
-		b.p.x = 46;b.p.y = 10; b.p.z = 18; 
-		e.p.x = 138;e.p.y = 96; e.p.z = 92;
-	      }
-	    else
-	      {	    
-		/* skewed_head - extended 9 
-		b.p.x = 21;b.p.y = 10; b.p.z = 2; 
-		e.p.x = 158;e.p.y = 126; e.p.z = 102;
-	      }	    
+	    /* skewed_head 
+	    b.p.x = 46;b.p.y = 10; b.p.z = 18; 
+	    e.p.x = 138;e.p.y = 96; e.p.z = 92;
 	    */
+	    
+	    /* skewed_head - extended 9 */
+	    b.p.x = 21;b.p.y = 10; b.p.z = 2; 
+	    e.p.x = 158;e.p.y = 126; e.p.z = 102;
 
-	    /* vis_head */
-	    //b.p.x = 138;b.p.y = 10; b.p.z = 15; 
-	    //e.p.x = 294;e.p.y = 226; e.p.z = 114;	    
+	    /*vis_head
+	    b.p.x = 138;b.p.y = 10; b.p.z = 15; 
+	    e.p.x = 294;e.p.y = 226; e.p.z = 114;
+	    */	    
 
 	    //ct_head
-	    b.p.x = 64;b.p.y = 20; b.p.z = 65; 
-	    e.p.x = 192;e.p.y = 118; e.p.z = 102;
+	    //b.p.x = 64;b.p.y = 20; b.p.z = 65; 
+	    //e.p.x = 192;e.p.y = 118; e.p.z = 102;
 	    	    
 
  	    box.setStartPoint(b);
@@ -415,129 +404,75 @@ float volume::calculateProb(int x, int y, int z)
 	case A_SIMILARITY:
 	  {
 	  // TODO: Needs to be implemented again
-	    
-	    if(TINFER) {	      
-	      // skewed_head - dentition
-	      // 51 87 60
-	      //int x1 = 115; int y1 = 41; int z1 = 50;
-	      //neighbour(6,d,x1,y1,z1,2800,4300);	  
 
-	      // visible_head - dentition
-	      // 51 87 60
-	      // int x1 = 254; int y1 = 154; int z1 = 82;
-	      // neighbour(6,d,x1,y1,z1,2300,4300);	  
+	  // skewed_head - dentition
+	  // 51 87 60
+	  //int x1 = 115; int y1 = 41; int z1 = 50;
 
-	      // ct_head - dentition
-	      // 51 87 60
-	      int x1 = 119; int y1 = 42; int z1 = 85;
-	      neighbour(6,d,x1,y1,z1,2450,4300);	  
+	  //neighbour(6,d,x1,y1,z1,2800,4300);	  
 
-	    } else {
+	  // skewed_head - jaw
+	  // 51 87 60
+	  //int x1 = 51; int y1 = 87; int z1 = 60;
+	  int x1 = 141; int y1 = 86; int z1 = 42;
 
-	      // skewed_head - jaw
-	      // 51 87 60
-	      //int x1 = 51; int y1 = 87; int z1 = 60;
-	      int x1 = 141; int y1 = 86; int z1 = 42;
+	  neighbour(6,d,x1,y1,z1,4300,8000);	  
 
-	      neighbour(6,d,x1,y1,z1,8400,8700);	  
+	  prob = this->matrix[z][y][x].p[d];
 
-	    }
-	    prob = this->matrix[z][y][x].p[d];
-	    
-	    //	  if (prob > 0 ) cerr << " some non 0 value " << endl;
+	  //	  if (prob > 0 ) cerr << " some non 0 value " << endl;
 
 	  }
 	  break;
 	case A_TISSUE_JAW:
-	  
-       	  prob = (float) (tmap.getTissue(ani::T_BONE).prob(this->matrix[z][y][x].i));
-	  //prob = (float) tmap.getTissue(ani::T_DENTITION).prob(this->matrix[z][y][x].i);
-	  	  
+	  //prob = (float) tmap.getTissue(ani::T_BONE).prob(this->matrix[z][y][x].i);
+	  prob = (float) tmap.getTissue(ani::T_DENTITION).prob(this->matrix[z][y][x].i);
+	  /*
 	  if ( prob > 0.0 )
 	  {
 	    cerr << "caculating prob using tissue for[" << x << "," << y << "," << z \
 		 << "]:" << this->matrix[z][y][x].i << " en:" << prob << endl;
-	  }
-	  if ( acum >= MIN_PROB)
+	  }*/
+	  if ( acum > 0 /*MIN_PROB*/ )
 	  {
-	    //	    cerr << "deleting point[" << x << "," << y << "," << z \
-	    //	 << "]:" << this->matrix[z][y][x].i << " en:" << prob << endl;
 	    this->matrix[z][y][x].p[d] = 0;
-	    this->matrix[z][y][x].i += 5000;	    
 	    acum = 0;
 	  }	  
 	  else
 	  {
 	    this->matrix[z][y][x].p[d] = prob;
-	    this->matrix[z][y][x].i += 0;	    
 	    acum = prob;
 	  }
-
-	  // First Select rules
-	  if( acum < MIN_PROB )
-	    {
-	      bbox box;
-	      location b,e; // just a test;
-
-	      /*
-	      // SELECT BONE TISSUE
-	      prob = (float) tmap.getTissue(ani::T_BONE).prob(this->matrix[z][y][x].i);
-	      	      
-	      // Apply Bounding box
-	      b.p.x = 21;b.p.y = 10; b.p.z = 2; 
-	      e.p.x = 158;e.p.y = 126; e.p.z = 102;
-
-	      //prob = 0.0;
-	      //prob += (float) box.getProb(p);
-	      if( x > b.p.x && x < e.p.x  && y > b.p.y  && y < e.p.y && z > b.p.z && z < e.p.z ) {
-		;// cerr << "testing [" << x << "," << y << "," << z << "] is :" << prob << endl;
-		//prob = 1;
-	      }
-	      else prob = 0;
-	      */	      	      
-	      int x1 = 141; int y1 = 86; int z1 = 42;
-	      prob += neighbour(6,d,x1,y1,z1,2400,2600) - 1;	  
-	      
-	      this->matrix[z][y][x].p[d] = prob;
-	      
-	      if ( prob > 0 ){
-		//this->matrix[z][y][x].i += 1000;
-	        ;cerr << "testing [" << x << "," << y << "," << z << "] is :" << prob << endl;
-	      } 
-	      else
-		this->matrix[z][y][x].i += 10000; 
-	    }
-	  else
-	    this->matrix[z][y][x].i += 5000; 
-	    
 	  break;
 	default:
 	  break;
-      }
-
-      // acum += (1.0/this->nRules)*prob;
-      if (acum + prob - 1 <= 0.0)
-	acum = 0.0;
-      else
-	acum += prob - 1;
- 
+      } 
+    }
+    else
+    {
+      this->matrix[z][y][x].p[d] = 0.0;
+      prob = 1.0; // trick.
     }
     
+    // acum += (1.0/this->nRules)*prob;
+    if (acum + prob - 1 <= 0.0)
+      acum = 0.0;
+    else
+      acum += prob - 1;
     
-    /* witness */
-    /*  Skewed Head */
-    if ( x == 58 && y == 68 && z == 40)
-      cerr << "Witness 1= "  << acum << endl; 
-    
-    if ( x == 68 && y == 75 && z == 70)
-      cerr << "Witness 2= "  << acum << endl; 
-    
-    if ( x == 89 && y == 19 && z == 60)
-      cerr << "Witness 3= "  << acum << endl; 
+  /* witness */
+
+  /*  Skewed Head */
+  if ( x == 58 && y == 68 && z == 40)
+    cerr << "Witness 1= "  << acum << endl; 
+
+  if ( x == 68 && y == 75 && z == 70)
+    cerr << "Witness 2= "  << acum << endl; 
+
+  if ( x == 89 && y == 19 && z == 60)
+    cerr << "Witness 3= "  << acum << endl; 
 
   }
-
-  this-> matrix[z][y][x].pt = acum;
   return acum;
   //return (acum>0)?acum/(this->nRules+1):0;
 }
@@ -586,11 +521,11 @@ bool volume::convolve( ani::location& min, ani::location& max, float low, int sh
     {
       for(int i = min.p.x; i <= max.p.x; i++) 
       {	
-	p = matrix[k][j][i].pt; //calculateProb(i,j,k);
-	if ( p <= low)
+	p = calculateProb(i,j,k);
+	if ( p >= low)
 	{
-	  matrix[k][j][i].i += shift;  
 	  howmany++;
+	  matrix[k][j][i].i += shift;  
 	}
       }
     }
@@ -599,24 +534,6 @@ bool volume::convolve( ani::location& min, ani::location& max, float low, int sh
   cerr << "there were " << howmany << " values shifted " << endl;
 }
 
-bool volume::resetT(ani::location& min, ani::location& max)
-{
-  float p;
-  unsigned long howmany = 0;
-
-  for(int k = min.p.z; k <= max.p.z; k++)
-  {
-    for( int j = min.p.y; j <= max.p.y; j++)
-    {
-      for(int i = min.p.x; i <= max.p.x; i++) 
-      {	
-	p = matrix[k][j][i].t = 0; 
-      }
-    }
-  }
-
-  return true;
-}
 
 bool volume::writeBox(std::ostream& output, ani::location& min, ani::location& max, float low, infoType info)
 {
@@ -632,14 +549,12 @@ bool volume::writeBox(std::ostream& output, ani::location& min, ani::location& m
     {
       for(int i = min.p.x; i <= max.p.x && r; i++) 
       {	
-	//p = this->matrix[k][j][i].pt; //(float) calculateProb(i,j,k);
 	p = (float) calculateProb(i,j,k);
 
 	if (info == I_OPACITY)
 	{
-	  d = (unsigned short) (p * 100);
-	  if ( p <= low ) d = 0.0;
-	  //else cerr << i << "," << j << "," << k << " is positive :" << d << endl;
+	  d = (unsigned short) p * 100;
+	  if ( p < low ) d = 0.0;
 	}
 	else
 	{
@@ -659,29 +574,6 @@ bool volume::writeBox(std::ostream& output, ani::location& min, ani::location& m
   cerr << "Box wrote" << endl;
 }
 
-void volume::check(ani::location& min, ani::location& max)
-{
-  int counts[20];
-  
-  for(int i = 0 ; i < 20; i++)
-    counts[i]=0;
-
-  for(int k = min.p.z; k <= max.p.z; k++)
-  {
-    for( int j = min.p.y; j <= max.p.y; j++)
-    {
-      for(int i = min.p.x; i <= max.p.x ; i++) 
-      {	
-	counts[matrix[k][j][i].i/1000]++;
-      }
-    }
-  }
-
-  for(int i = 0; i< 20; i++)
-    cerr<< "values in " << i*1000 << "-" << ((i+1)*1000)-1 << "are : " << counts[i] << endl;
-
-  return;
-}
 void volume::write(std::ostream& output, vformat fmt, int alg)
 {
   unsigned short i,j,k;
@@ -708,16 +600,8 @@ void volume::write(std::ostream& output, vformat fmt, int alg)
   {
     case V_ANI_BINARY:
       // write only > MIN_PROB 
-      /*  Luis Request 03/12/12
       calcBox(min,max,(float)mprob);
       writeBox(output,min,max,0.0,ani::I_OPACITY);
-      break;
-      */
-      mprob = 0.0;
-      min.setPoint(0,0,0);
-      max.setPoint(xdim-1,ydim-1,zdim-1);
-      cerr << "wrinting box using prob: "<< mprob << endl;
-      writeBox(output,min,max,mprob,ani::I_OPACITY);
       break;
     default:
       //calcBox(min,max,(float)mprob);
@@ -732,11 +616,8 @@ void volume::write(std::ostream& output, vformat fmt, int alg)
       min.setPoint(0,0,0);
       max.setPoint(xdim-1,ydim-1,zdim-1);
       cerr << "wrinting fake box using prob: "<< mprob << endl;
-      if (TINFER)
-	this->convolve(min, max, 0.0, 6000); //skewed head
-      else
-	this->convolve(min, max, 0.0, 10000); //skewed jaw
-      this->check(min, max);
+      // this->convolve(min, max, mprob, 4300); //skewed head
+      this->convolve(min, max, mprob, 12000); //skewed jaw
       writeBox(output,min,max,0.0,ani::I_INTENSITY);
       break;
   }
@@ -1096,6 +977,7 @@ void volume::infer(int x, int y, int z, unsigned short min, unsigned short max)
   // precalculate
   for(k=0; k< zdim;k++) {
     for(j=0; j< ydim;j++) {
+      for(i=0; i< xdim;i++) {
 	matrix[k][j][i].pb = this->pdist(i,j,k);
 	if(matrix[k][j][i].i < min) {
 	  matrix[k][j][i].o = 0;
@@ -1135,12 +1017,9 @@ float volume::neighbour(int type, int d, int x, int y, int z, unsigned short min
   
   if (type >= 6) {
     
-    if (matrix[z][y][x].t == 1)
-      return matrix[z][y][x].p[d];
-
     if ( matrix[z][y][x].i >= min && matrix[z][y][z].i <= max && matrix[z][y][x].t != 1) {
 
-      //cerr << "positive for [" << x << "," << y << "," << z << "]" << matrix[z][y][x].i << endl; 
+      cerr << "positive for [" << x << "," << y << "," << z << "]" << matrix[z][y][x].i << endl; 
       matrix[z][y][x].t = 1;
 
       if ( z < this->min.p.z && y < this->min.p.y && x < this->min.p.x ) {

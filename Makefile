@@ -1,8 +1,8 @@
 # Compiler name
 CC=g++
 INCLUDE=include
-TARGET=target/obj
-SRCDIR=src/main/cpp
+TARGET=build/obj
+SRCDIR=src/cpp
 BINDIR=bin
 
 #O.S. dependences (fix)
@@ -68,8 +68,8 @@ $(BINDIR)/infer: $(OBJDEP) $(TARGET)/infer.o
 $(TARGET)/%.o: $(SRCDIR)/%.cpp
 	$(CC) $(CFLAGS) $< -o $@
 
-#$(TARGET)/.cpp.o:
-#	$(CC) $(CFLAGS) $(SRCDIR)/$< -o $@
+$(TARGET)/.cpp.o:
+	$(CC) $(CFLAGS) $(SRCDIR)/$< -o $@
 
 dep.env: 
 	mvn dependency:build-classpath -Dmdep.outputFile=dep.env

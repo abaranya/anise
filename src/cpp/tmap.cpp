@@ -17,10 +17,14 @@ tissueMap::tissueMap()
   tmap = new tissue[T_OTHER+1];
 
   // Set Each Tissue;
-  tmap[T_BONE].setTissue(1500,3000,2500,500);
-  tmap[T_DENTITION].setTissue(2900,4300,3600,500);  // skewed_head
-  //  tmap[T_DENTITION].setTissue(2500,4300,3000,500); // VIS_HUMAN
+  //tmap[T_BONE].setTissue(1500,3100,2600,250);
+  tmap[T_BONE].setTissue(1500,3600,2600,250);
+  //tmap[T_DENTITION].setTissue(3800,4300,4000,300);  // skewed_head
+  // tmap[T_DENTITION].setTissue(2800,4300,3100,300);  // skewed_head
+  // tmap[T_DENTITION].setTissue(2750,4300,3100,300);  // skewed_head close
+  tmap[T_DENTITION].setTissue(2400,4300,3000,500); // VIS_HUMAN
   //  tmap[T_DENTITION].setTissue(2600,3400,3000,300); // CT_Head
+  tmap[T_SPEC].setTissue(8400,9100,8600,200);
   tmap[T_OTHER].setTissue(0,1000,500,500);
 }
 

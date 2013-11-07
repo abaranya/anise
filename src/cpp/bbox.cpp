@@ -62,9 +62,10 @@ float calcProbDist(int w1, int w2, int value)
   float d; 
   float t;
 
+  if ( value <= w2 && value >= w1 ) return 1.0;
   if ( value <= w1 || value >= w2 ) return 0.0;
 
-  d = std::abs((float)(w1 + w2))/2.0;
+  d = std::abs((float) w1 + w2)/2;
   m = std::abs(d - (float)value);
 
   t = 1 - (m / d)/2;
@@ -95,12 +96,10 @@ float bbox::getProb(point& p)
       //      cerr << "Getting probs:[" << px << "," << py << "," << pz << "] Totalling: " << 1.0/3.0 * (px + py + pz) << endl;
 
       //    }
-      m = (px < py)? px : py;
-      m = (m < pz)? m : pz;
-      //      m = (m < 0.50)? 0.0 : m;
 
-      return m;
-      //      return (1.0 / 3.0) * (px + py + pz);
+      m = px + py + pz - 2;
+
+      return (m > 0)? m : 0.0 ;
 };
  
 float bbox::getAxisProb(axis dim, int value)
